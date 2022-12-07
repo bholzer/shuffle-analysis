@@ -2,6 +2,7 @@
 import sys
 from itertools import chain, count
 from functools import reduce
+import matplotlib.pyplot as plt
 
 def weave(deck):
 	half = len(deck) // 2
@@ -16,15 +17,24 @@ def shuffles_required(deck_size):
 			return i
 
 def main():
-	max_size = 200
+	max_size = 2000
 	deck_sizes = range(2, max_size+1, 2)
 	results = reduce(
-		lambda res, deck_size: res + [(deck_size, shuffles_required(deck_size))],
+		lambda res, deck_size: res + [ (deck_size, shuffles_required(deck_size)) ],
 		deck_sizes,
 		[]
-	)	
+	)
 
-	print(results)
+	x = [ data[0] for data in results ]
+	y = [ data[1] for data in results ]
+
+	print(sorted(y))
+
+	plt.plot(x, y, 'ro', markersize=3.0)
+	plt.xlabel('Deck Size')
+	plt.ylabel('Shuffle Count')
+	plt.grid()
+	plt.show()
 
 if __name__ == '__main__':
 	sys.exit(main())
