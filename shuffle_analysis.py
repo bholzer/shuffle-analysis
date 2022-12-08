@@ -3,6 +3,8 @@ import sys
 from itertools import chain, count
 from functools import reduce
 import matplotlib.pyplot as plt
+import csv
+import argparse
 
 def weave(deck):
 	half = len(deck) // 2
@@ -16,25 +18,64 @@ def shuffles_required(deck_size):
 		if current_shuffle == starting_deck:
 			return i
 
+def write_to_csv(results, file_name):
+	with open(file_name, 'w', newline='') as csv_file:
+		fieldnames = ['deck_size', 'shuffle_count']
+		writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+		writer.writeheader()
+		for r in results:
+			writer.writerow({ 'deck_size': r[0], 'shuffle_count': r[1] })
+
 def main():
-	max_size = 2000
-	deck_sizes = range(2, max_size+1, 2)
+	args = parse_args()
+	deck_sizes = range(args.min, args.max+1, 2)
 	results = reduce(
 		lambda res, deck_size: res + [ (deck_size, shuffles_required(deck_size)) ],
 		deck_sizes,
 		[]
 	)
 
-	x = [ data[0] for data in results ]
-	y = [ data[1] for data in results ]
+	if args.out:
+		write_to_csv(results, args.out)
 
-	print(sorted(y))
+	if args.plot:
+		x = [ data[0] for data in results ]
+		y = [ data[1] for data in results ]
+		plt.plot(x, y, 'ro', markersize=3.0)
+		plt.xlabel('Deck Size')
+		plt.ylabel('Shuffle Count')
+		plt.grid()
+		plt.show()
 
-	plt.plot(x, y, 'ro', markersize=3.0)
-	plt.xlabel('Deck Size')
-	plt.ylabel('Shuffle Count')
-	plt.grid()
-	plt.show()
+def parse_args():
+	parser = argparse.ArgumentParser(description='Do an analysis of perfect shuffles on various deck sizes')
+	parser.add_argument(
+		'-m',
+		'--min',
+		type=int,
+		default=2,
+		help='Minimum deck size to check, must be an even number'
+	)
+	parser.add_argument(
+		'-n',
+		'--max',
+		type=int,
+		default=1000,
+		help='Maximum deck size to check, must be an even number'
+	)
+	parser.add_argument(
+		'-o',
+		'--out',
+		help='File to write results to in CSV format'
+	)
+	parser.add_argument(
+		'-p',
+		'--plot',
+		default=True,
+		help='Display plot of results'
+	)
+
+	return parser.parse_args()
 
 if __name__ == '__main__':
 	sys.exit(main())
