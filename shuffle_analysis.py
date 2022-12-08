@@ -35,17 +35,19 @@ def main():
 		[]
 	)
 
-	if args.out:
-		write_to_csv(results, args.out)
+	out_file_name = f'{args.min}-{args.max}'
 
-	if args.plot:
+	if args.data_out:
+		write_to_csv(results, f'{out_file_name}.csv')
+
+	if args.plot_out:
 		x = [ data[0] for data in results ]
 		y = [ data[1] for data in results ]
 		plt.plot(x, y, 'ro', markersize=3.0)
 		plt.xlabel('Deck Size')
 		plt.ylabel('Shuffle Count')
 		plt.grid()
-		plt.show()
+		plt.savefig(f'{out_file_name}.png', bbox_inches='tight', dpi=200)
 
 def parse_args():
 	parser = argparse.ArgumentParser(description='Do an analysis of perfect shuffles on various deck sizes')
@@ -64,15 +66,16 @@ def parse_args():
 		help='Maximum deck size to check, must be an even number'
 	)
 	parser.add_argument(
-		'-o',
-		'--out',
+		'-d',
+		'--data-out',
+		action=argparse.BooleanOptionalAction,
 		help='File to write results to in CSV format'
 	)
 	parser.add_argument(
 		'-p',
-		'--plot',
-		default=True,
-		help='Display plot of results'
+		'--plot-out',
+		action=argparse.BooleanOptionalAction,
+		help='Write plot to file'
 	)
 
 	return parser.parse_args()
