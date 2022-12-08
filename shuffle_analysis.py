@@ -38,7 +38,7 @@ def main():
 	out_file_name = f'{args.min}-{args.max}'
 
 	if args.data_out:
-		write_to_csv(results, f'{out_file_name}.csv')
+		write_to_csv(results, f'data/{out_file_name}.csv')
 
 	if args.plot_out:
 		x = [ data[0] for data in results ]
@@ -47,7 +47,7 @@ def main():
 		plt.xlabel('Deck Size')
 		plt.ylabel('Shuffle Count')
 		plt.grid()
-		plt.savefig(f'{out_file_name}.png', bbox_inches='tight', dpi=200)
+		plt.savefig(f'images/{out_file_name}.png', bbox_inches='tight', dpi=200)
 
 def parse_args():
 	parser = argparse.ArgumentParser(description='Do an analysis of perfect shuffles on various deck sizes')
