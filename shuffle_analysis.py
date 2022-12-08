@@ -5,6 +5,7 @@ from functools import reduce
 import matplotlib.pyplot as plt
 import csv
 import argparse
+from numpy import interp
 
 def weave(deck):
 	half = len(deck) // 2
