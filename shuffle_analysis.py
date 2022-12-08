@@ -7,20 +7,24 @@ import csv
 import argparse
 from numpy import interp
 from multiprocessing import Pool
+from time import perf_counter
 
 def weave(deck):
 	half = len(deck) // 2
 	return list(chain.from_iterable(zip(deck[:half], deck[half:])))
 
 def shuffles_required(deck_size):
-	print(f'Shuffling {deck_size} items')
+	start_time = perf_counter()
 	starting_deck = list(range(deck_size))
 	current_shuffle = starting_deck
 	for i in count(start=1):
 		current_shuffle = weave(current_shuffle)
 		if current_shuffle == starting_deck:
+			end_time = perf_counter()
+			print(f'Shuffling {deck_size} items {i} times took {end_time - start_time:0.4f}s')
 			return i
 
+# Wrap shuffles_required for parallelization
 def shuffles_for_deck_size(deck_size):
 	return (deck_size, shuffles_required(deck_size))
 
@@ -36,7 +40,7 @@ def main():
 	args = parse_args()
 	deck_sizes = range(args.min, args.max+1, 2)
 
-	results = Pool(processes=4).map(shuffles_for_deck_size, deck_sizes)
+	results = Pool(processes=6).map(shuffles_for_deck_size, deck_sizes)
 
 	out_file_name = f'{args.min}-{args.max}'
 
